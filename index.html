@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
+      html {
+        height: 100%;
+        box-sizing: border-box;
+      }
+
+      *, *:before, *:after {
+        box-sizing: inherit;
+      }
+
+      body {
+        background-image: url(https://fightrise.com/storage/utf3/assets/team-fight-scoreboard-ice-bg.png);
+        color: #fff;
+        font-family: 'Lato', sans-serif;
+        display: flex;
+        height: 100%;
+        margin: 0;
+      }
+
+      ul {
+        font-size: 20px;
+        list-style: none;
+        padding-left: 0;
+      }
+
+      li {
+        margin-bottom: 16px;
+        position: relative;
+      }
+
+      .set-names-wrapper {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        padding-left: 40px;
+        padding-top: 40px;
+      }
+
+      .logo-wrapper {
+        background-color: #222;
+        padding: 10px;
+      }
+
+      .utf-logo {
+        position: absolute;
+        right: 40px;
+        margin: 0 auto;
+        max-width: 420px;
+        top: 40px;
+      }
+
+      .active-li::after {
+        content:'>';
+        font-size: 40px;
+        position: absolute;
+        top: -12px;
+        /* font-weight: 600; */
+        margin-left: 20px;
+      }
+
+      .char-img {
+        border: 2px solid white;
+        background-color: black;
+        max-width: 250px;
+      }
+
+      .char-img.p2 {
+        transform: scaleX(-1);
+      }
+
+      .gold {
+        color: gold;
+      }
+
+      .red {
+        color: red;
+      }
+
+      #stats-wrapper {
+        display: grid;
+        flex: 1;
+        font-size: 38px;
+        font-weight: 600;
+        grid-template-columns: repeat(3, 320px);
+        grid-template-rows: 90px 180px repeat(auto-fit, 90px);
+        justify-content: center;
+        padding-right: 350px;
+        padding-top: 60px;
+        text-align: center;
+      }
+    </style>
+</head>
+<body>
+    <div class="set-names-wrapper">
+      <div class="logo-wrapper">
+        <img src="https://fightrise.com/storage/utf3/assets/fightrise-logo-small.png" alt="">
+      </div>
+      <ul id="set-names"></ul>
+    </div>
+
+    <img class="utf-logo" src="https://fightrise.com/storage/utf3/assets/utf-wreck-the-halls-only-title.png" alt="">
+    <div id="stats-wrapper"></div>
+
+
+    <!-- Insert this script at the bottom of the HTML, but before you use any Firebase services -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
+
+    // Add Firebase products that you want to use
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+    import { getFirestore, collection, getDocs, onSnapshot, query } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+    apiKey: "AIzaSyD1QtHGv0JCfwypJW_X2sKT87-wZweWnd8",
+    authDomain: "sf6-stat-tracker.firebaseapp.com",
+    projectId: "sf6-stat-tracker",
+    storageBucket: "sf6-stat-tracker.appspot.com",
+    messagingSenderId: "692566161474",
+    appId: "1:692566161474:web:bd4ef32c22239af0a095db",
+    measurementId: "G-T2RYDLZ6HD"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    console.log(db);
+
+    let setUl = document.getElementById('set-names')
+
+    // Get character image
+    const getCharImg = (character) => {
+      let src = '';
+      switch (character) {
+        case 'Ryu':
+          src = 'img/ryu.png';
+          break;
+        case 'Luke':
+          src = 'img/luke.png';
+          break
+        case 'Kimberly':
+          src = 'img/kimberly.png';
+          break
+        case 'Chun-Li':
+          src = 'img/chunli.png';
+          break
+        case 'Manon':
+          src = 'img/manon.png';
+          break
+        case 'Zangief':
+          src = 'img/zangief.png';
+          break
+        case 'JP':
+          src = 'img/jp.png';
+          break
+        case 'Dhalsim':
+          src = 'img/dhalsim.png';
+          break
+        case 'Cammy':
+          src = 'img/cammy.png';
+          break
+        case 'Ken':
+          src = 'img/ken.png';
+          break
+        case 'Dee Jay':
+          src = 'img/deejay.png';
+          break
+        case 'Lily':
+          src = 'img/lily.png';
+          break
+        case 'Aki':
+          src = 'img/aki.png';
+          break
+        case 'Rashid':
+          src = 'img/rashid.png';
+          break
+        case 'Blanka':
+          src = 'img/blanka.png';
+          break
+        case 'Juri':
+          src = 'img/juri.png';
+          break
+        case 'Marisa':
+          src = 'img/marisa.png';
+          break
+        case 'Guile':
+          src = 'img/guile.png';
+          break
+        case 'E. Honda':
+          src = 'img/ehonda.png';
+          break
+        case 'Jamie':
+          src = 'img/jamie.png';
+          break
+        default:
+          src = '';
+          break;
+      }
+      return src;
+    }
+
+    // Get match data
+    const q = query(collection(db, "sets"));
+    const querySnapshot = onSnapshot(q, (querySnapshot) => {
+      let ul = document.getElementById('set-names');
+      let statsWrapper = document.getElementById('stats-wrapper');
+      ul.innerHTML = '';
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data().setData);
+        let data = doc.data().setData
+
+        let statTotals = {
+          p1: {
+            burnouts: 0,
+            cornerTime: 0,
+            punishes: 0,
+            throws: 0,
+            dIHits: 0,
+            counterDIs: 0,
+            perfectParries: 0
+
+          },
+          p2: {
+            burnouts: 0,
+            cornerTime: 0,
+            punishes: 0,
+            throws: 0,
+            dIHits: 0,
+            counterDIs: 0,
+            perfectParries: 0
+          }
+        }
+
+        data.forEach((match) => {
+          statTotals.p1.burnouts += match.p1.burnout_count;
+          statTotals.p1.cornerTime += match.p1.cornerSeconds;
+          statTotals.p1.punishes += match.p1.punish_tracker;
+          statTotals.p1.throws += match.p1.throws;
+          statTotals.p1.dIHits += match.p1.dIHit;
+          statTotals.p1.counterDIs += match.p1.dICounterDI;
+          statTotals.p1.perfectParries += match.p1.perfectParry;
+
+          statTotals.p2.burnouts += match.p2.burnout_count;
+          statTotals.p2.cornerTime += match.p2.cornerSeconds;
+          statTotals.p2.punishes += match.p2.punish_tracker;
+          statTotals.p2.throws += match.p2.throws;
+          statTotals.p2.dIHits += match.p2.dIHit;
+          statTotals.p2.counterDIs += match.p2.dICounterDI;
+          statTotals.p2.perfectParries += match.p2.perfectParry;
+        })
+
+        const li = document.createElement('li');
+        li.innerHTML = `${data[0].p1.playerName} vs ${data[0].p2.playerName}`;
+        // ul.innerHTML += li
+        li.addEventListener('click', () => {
+          const liLIst = document.querySelectorAll('#set-names li')
+          console.log(liLIst);
+          liLIst.forEach((li) => {li.classList.remove('active-li')});
+          li.classList.add('active-li')
+          // console.log(`${data[0].p1.playerName}`);
+          // li.innerText = li.innerText += " >"
+          statsWrapper.innerHTML = '';
+          const statsHtml = `
+            <div></div> <div>${data.length} ${data.length === 1 ? "Game" : "Games"}</div> <div></div>
+            <div><img class="char-img" src="${getCharImg(data[0].p1.character)}"></div>
+            <div></div>
+            <div><img class="char-img p2" src="${getCharImg(data[0].p2.character)}"></div>
+
+            <div>${data[0].p1.playerName}</div>
+            <div>vs</div>
+            <div>${data[0].p2.playerName}</div>
+
+            <div class="${statTotals.p1.burnouts > statTotals.p2.burnouts ? "red" : ""}">${statTotals.p1.burnouts}</div>
+            <div>Burnouts</div>
+            <div class="${statTotals.p2.burnouts > statTotals.p1.burnouts ? "red" : ""}">${statTotals.p2.burnouts}</div>
+
+            <div class="${statTotals.p1.punishes > statTotals.p2.punishes ? "gold" : ""}">${statTotals.p1.punishes}</div>
+            <div>Punish Counters</div>
+            <div class="${statTotals.p2.punishes > statTotals.p1.punishes ? "gold" : ""}">${statTotals.p2.punishes}</div>
+
+            <div class="${statTotals.p1.perfectParries > statTotals.p2.perfectParries ? "gold" : ""}">${statTotals.p1.perfectParries}</div>
+            <div>Perfect Parries</div>
+            <div class="${statTotals.p2.perfectParries > statTotals.p1.perfectParries ? "gold" : ""}">${statTotals.p2.perfectParries}</div>
+            
+            <div class="${statTotals.p1.throws > statTotals.p2.throws ? "gold" : ""}">${statTotals.p1.throws}</div>
+            <div>Throws</div>
+            <div class="${statTotals.p2.throws > statTotals.p1.throws ? "gold" : ""}">${statTotals.p2.throws}</div>
+            
+            <div class="${statTotals.p1.dIHits > statTotals.p2.dIHits ? "gold" : ""}">${statTotals.p1.dIHits}</div>
+            <div>Uncontested DIs</div>
+            <div class="${statTotals.p2.dIHits > statTotals.p1.dIHits ? "gold" : ""}">${statTotals.p2.dIHits}</div>
+            
+            <div class="${statTotals.p1.counterDIs > statTotals.p2.counterDIs ? "gold" : ""}">${statTotals.p1.counterDIs}</div>
+            <div>DI Counters</div>
+            <div class="${statTotals.p2.counterDIs > statTotals.p1.counterDIs ? "gold" : ""}">${statTotals.p2.counterDIs}</div>
+
+            <div class="${statTotals.p1.cornerTime > statTotals.p2.cornerTime ? "red" : ""}">${parseFloat(statTotals.p1.cornerTime).toFixed(2)}s</div>
+            <div>Time Cornered</div>
+            <div class="${statTotals.p2.cornerTime > statTotals.p1.cornerTime ? "red" : ""}">${parseFloat(statTotals.p2.cornerTime).toFixed(2)}s</div>
+          `;
+
+          statsWrapper.innerHTML = statsHtml;
+        })
+        ul.appendChild(li);
+      });
+});
+
+    // db.collection('sets')
+    //   .get()
+    //   .then(snapshot => {
+    //       const docIds = snapshot.docs.map(doc => doc.id)
+    //   });
+  </script>
+  <script src="main.js"></script>
+</body>
+</html>
