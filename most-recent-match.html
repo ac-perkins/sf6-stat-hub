@@ -132,7 +132,7 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    console.log(db);
+    // console.log(db);
 
     let setUl = document.getElementById('set-names')
 
@@ -256,14 +256,6 @@
           statTotals.p2.counterDIs = newestMatch.p2.dICounterDI;
           statTotals.p2.perfectParries = newestMatch.p2.perfectParry;
 
-          console.log(statTotals.p1.dIHits);
-          console.log(statTotals.p2.dIHits);
-          console.log(statTotals.p1.dIHits > statTotals.p2.dIHits);
-
-          console.log(getCharImg(newestMatch.p1.character));
-          console.log(getCharImg(newestMatch.p2.character));
-
-          p1Info.innerHTML = '';
           const p1InfoHtml = `
             <div>Game ${data.length} Stats</div>
             <div><img class="char-img" src="${getCharImg(newestMatch.p1.character)}"></div>
@@ -278,8 +270,6 @@
               <li><span>Time Cornered:</span> <span class="${statTotals.p1.cornerTime > statTotals.p2.cornerTime ? "red" : ""}">${statTotals.p1.cornerTime}s</span></li>
             </ul>
           `;
-
-          p1Info.innerHTML = p1InfoHtml;
 
           const p2InfoHtml = `
             <div>Game ${data.length} Stats</div>
@@ -296,16 +286,16 @@
             </ul>
           `;
 
-          p2Info.innerHTML = p2InfoHtml;
+          if (newestMatch.sideSwap) {
+            p1Info.innerHTML = p2InfoHtml;
+            p2Info.innerHTML = p1InfoHtml;
+          } else {
+            p1Info.innerHTML = p1InfoHtml;
+            p2Info.innerHTML = p2InfoHtml;
+          }
       });
-});
+    });
 
-    // db.collection('sets')
-    //   .get()
-    //   .then(snapshot => {
-    //       const docIds = snapshot.docs.map(doc => doc.id)
-    //   });
   </script>
-  <script src="main.js"></script>
 </body>
 </html>
