@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>SF6 Stat Hub</title>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
 
@@ -18,6 +18,7 @@
 
       body {
         background-image: url(https://fightrise.com/storage/utf3/assets/team-fight-scoreboard-ice-bg.png);
+        background-size: cover;
         color: #fff;
         font-family: 'Lato', sans-serif;
         display: flex;
@@ -34,6 +35,10 @@
       li {
         margin-bottom: 16px;
         position: relative;
+      }
+
+      #set-names li {
+        cursor: pointer;
       }
 
       .set-names-wrapper {
@@ -133,7 +138,7 @@
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    console.log(db);
+    // console.log(db);
 
     let setUl = document.getElementById('set-names')
 
@@ -213,9 +218,10 @@
     const querySnapshot = onSnapshot(q, (querySnapshot) => {
       let ul = document.getElementById('set-names');
       let statsWrapper = document.getElementById('stats-wrapper');
+      let liLIst = document.querySelectorAll('#set-names li')
       ul.innerHTML = '';
       querySnapshot.forEach((doc) => {
-        console.log(doc.data().setData);
+        // console.log(doc.data().setData);
         let data = doc.data().setData
 
         let statTotals = {
@@ -260,14 +266,11 @@
 
         const li = document.createElement('li');
         li.innerHTML = `${data[0].p1.playerName} vs ${data[0].p2.playerName}`;
-        // ul.innerHTML += li
         li.addEventListener('click', () => {
-          const liLIst = document.querySelectorAll('#set-names li')
-          console.log(liLIst);
+          // console.log(liLIst);
           liLIst.forEach((li) => {li.classList.remove('active-li')});
           li.classList.add('active-li')
           // console.log(`${data[0].p1.playerName}`);
-          // li.innerText = li.innerText += " >"
           statsWrapper.innerHTML = '';
           const statsHtml = `
             <div></div> <div>${data.length} ${data.length === 1 ? "Game" : "Games"}</div> <div></div>
@@ -312,13 +315,11 @@
         })
         ul.appendChild(li);
       });
-});
+      liLIst = document.querySelectorAll('#set-names li')
+      liLIst[liLIst.length - 1].click();
+    });
 
-    // db.collection('sets')
-    //   .get()
-    //   .then(snapshot => {
-    //       const docIds = snapshot.docs.map(doc => doc.id)
-    //   });
+
   </script>
   <script src="main.js"></script>
 </body>
