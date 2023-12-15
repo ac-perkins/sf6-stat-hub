@@ -214,7 +214,7 @@
     }
 
     // Get match data
-    const q = query(collection(db, "sets"), orderBy("timestamp"));
+    const q = query(collection(db, "sets"), orderBy("timestamp", "desc"));
     const querySnapshot = onSnapshot(q, (querySnapshot) => {
       let ul = document.getElementById('set-names');
       let statsWrapper = document.getElementById('stats-wrapper');
@@ -316,7 +316,7 @@
         ul.appendChild(li);
       });
       liLIst = document.querySelectorAll('#set-names li')
-      liLIst[liLIst.length - 1].click();
+      liLIst[0].click();
     });
 
 
