@@ -81,6 +81,17 @@
         transform: scaleX(-1);
       }
 
+      .score {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 100px;
+      }
+
+      .score-divider {
+        margin: 0 22px;
+      }
+
       .gold {
         color: gold;
       }
@@ -232,7 +243,8 @@
             throws: 0,
             dIHits: 0,
             counterDIs: 0,
-            perfectParries: 0
+            perfectParries: 0,
+            wins: 0
 
           },
           p2: {
@@ -242,7 +254,8 @@
             throws: 0,
             dIHits: 0,
             counterDIs: 0,
-            perfectParries: 0
+            perfectParries: 0,
+            wins: 0
           }
         }
 
@@ -254,6 +267,9 @@
           statTotals.p1.dIHits += match.p1.dIHit;
           statTotals.p1.counterDIs += match.p1.dICounterDI;
           statTotals.p1.perfectParries += match.p1.perfectParry;
+          if (match.p1.isWinner) {
+            statTotals.p1.wins++
+          }
 
           statTotals.p2.burnouts += match.p2.burnout_count;
           statTotals.p2.cornerTime += match.p2.cornerSeconds;
@@ -262,6 +278,9 @@
           statTotals.p2.dIHits += match.p2.dIHit;
           statTotals.p2.counterDIs += match.p2.dICounterDI;
           statTotals.p2.perfectParries += match.p2.perfectParry;
+          if (match.p2.isWinner) {
+            statTotals.p2.wins++
+          }
         })
 
         const li = document.createElement('li');
@@ -275,7 +294,11 @@
           const statsHtml = `
             <div></div> <div>${data.length} ${data.length === 1 ? "Game" : "Games"}</div> <div></div>
             <div><img class="char-img" src="${getCharImg(data[0].p1.character)}"></div>
-            <div></div>
+            <div class="score">
+              <span>${statTotals.p1.wins}</span>
+              <span class="score-divider">-</span>
+              <span>${statTotals.p2.wins}</span>
+            </div>
             <div><img class="char-img p2" src="${getCharImg(data[0].p2.character)}"></div>
 
             <div>${data[0].p1.playerName}</div>
