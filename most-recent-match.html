@@ -28,7 +28,7 @@
       ul {
         font-size: 26px;
         list-style: none;
-        margin-top: 80px;
+        margin-top: 40px;
         padding-left: 0;
       }
 
@@ -65,6 +65,12 @@
         background-color: black;
         margin: 40px 0 0;
         max-width: 300px;
+      }
+
+      .winner {
+        height: 40px;
+        margin: 20px 0;
+        font-size: 40px;
       }
 
       .gold {
@@ -261,6 +267,7 @@
             <div>Game ${data.length} Stats</div>
             <div><img class="char-img" src="${getCharImg(newestMatch.p1.character)}"></div>
             <div>${data[0].p1.playerName}</div>
+            <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
             <ul>
               <li><span>Burnouts:</span> <span class="${statTotals.p1.burnouts > statTotals.p2.burnouts ? "red" : ""}">${statTotals.p1.burnouts}</span></li>
               <li><span>Punish Counters:</span> <span class="${statTotals.p1.punishes > statTotals.p2.punishes ? "gold" : ""}">${statTotals.p1.punishes}</span></li>
@@ -276,6 +283,7 @@
             <div>Game ${data.length} Stats</div>
             <div><img class="char-img" src="${getCharImg(newestMatch.p2.character)}"></div>
             <div>${data[0].p2.playerName}</div>
+            <div class="winner">${newestMatch.p2.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
             <ul>
               <li><span>Burnouts:</span> <span class="${statTotals.p2.burnouts > statTotals.p1.burnouts ? "red" : ""}">${statTotals.p2.burnouts}</span></li>
               <li><span>Punish Counters:</span> <span class="${statTotals.p2.punishes > statTotals.p1.punishes ? "gold" : ""}">${statTotals.p2.punishes}</span></li>
