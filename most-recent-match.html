@@ -225,83 +225,45 @@
         let data = doc.data().setData
         let newestMatch = data[data.length -1];
 
-        let statTotals = {
-          p1: {
-            burnouts: 0,
-            cornerTime: 0,
-            punishes: 0,
-            throws: 0,
-            dIHits: 0,
-            counterDIs: 0,
-            perfectParries: 0
+        const p1InfoHtml = `
+          <div>Game ${data.length} Stats</div>
+          <div><img class="char-img" src="${getCharImg(newestMatch.p1.character)}"></div>
+          <div>${data[0].p1.playerName}</div>
+          <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
+          <ul>
+            <li><span>Burnouts:</span> <span class="${newestMatch.p1.burnout_count > newestMatch.p2.burnout_count ? "red" : ""}">${newestMatch.p1.burnout_count}</span></li>
+            <li><span>Punish Counters:</span> <span class="${newestMatch.p1.punish_tracker > newestMatch.p2.punish_tracker ? "gold" : ""}">${newestMatch.p1.punish_tracker}</span></li>
+            <li><span>Perfect Parries:</span> <span class="${newestMatch.p1.perfectParry > newestMatch.p2.perfectParry ? "gold" : ""}">${newestMatch.p1.perfectParry}</span></li>
+            <li><span>Throws:</span> <span class="${newestMatch.p1.throws > newestMatch.p2.throws ? "gold" : ""}">${newestMatch.p1.throws}</span></li>
+            <li><span>Uncontested DIs:</span> <span class="${newestMatch.p1.dIHit > newestMatch.p2.dIHit ? "gold" : ""}">${newestMatch.p1.dIHit}</span></li>
+            <li><span>DI Counters:</span> <span class="${newestMatch.p1.dICounterDI > newestMatch.p2.dICounterDI ? "gold" : ""}">${newestMatch.p1.dICounterDI}</span></li>
+            <li><span>Time Cornered:</span> <span class="${newestMatch.p1.cornerSeconds > newestMatch.p2.cornerSeconds ? "red" : ""}">${newestMatch.p1.cornerSeconds}s</span></li>
+          </ul>
+        `;
 
-          },
-          p2: {
-            burnouts: 0,
-            cornerTime: 0,
-            punishes: 0,
-            throws: 0,
-            dIHits: 0,
-            counterDIs: 0,
-            perfectParries: 0
-          }
+        const p2InfoHtml = `
+          <div>Game ${data.length} Stats</div>
+          <div><img class="char-img" src="${getCharImg(newestMatch.p2.character)}"></div>
+          <div>${data[0].p2.playerName}</div>
+          <div class="winner">${newestMatch.p2.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
+          <ul>
+            <li><span>Burnouts:</span> <span class="${newestMatch.p2.burnout_count > newestMatch.p1.burnout_count ? "red" : ""}">${newestMatch.p2.burnout_count}</span></li>
+            <li><span>Punish Counters:</span> <span class="${newestMatch.p2.punish_tracker > newestMatch.p1.punish_tracker ? "gold" : ""}">${newestMatch.p2.punish_tracker}</span></li>
+            <li><span>Perfect Parries:</span> <span class="${newestMatch.p2.perfectParry > newestMatch.p1.perfectParry ? "gold" : ""}">${newestMatch.p2.perfectParry}</span></li>
+            <li><span>Throws:</span> <span class="${newestMatch.p2.throws > newestMatch.p1.throws ? "gold" : ""}">${newestMatch.p2.throws}</span></li>
+            <li><span>Uncontested DIs:</span> <span class="${newestMatch.p2.dIHit > newestMatch.p1.dIHit ? "gold" : ""}">${newestMatch.p2.dIHit}</span></li>
+            <li><span>DI Counters:</span> <span class="${newestMatch.p2.dICounterDI > newestMatch.p1.dICounterDI ? "gold" : ""}">${newestMatch.p2.dICounterDI}</span></li>
+            <li><span>Time Cornered:</span> <span class="${newestMatch.p2.cornerSeconds > newestMatch.p1.cornerSeconds ? "red" : ""}">${newestMatch.p2.cornerSeconds}s</span></li>
+          </ul>
+        `;
+
+        if (newestMatch.sideSwap) {
+          p1Info.innerHTML = p2InfoHtml;
+          p2Info.innerHTML = p1InfoHtml;
+        } else {
+          p1Info.innerHTML = p1InfoHtml;
+          p2Info.innerHTML = p2InfoHtml;
         }
-
-          statTotals.p1.burnouts = newestMatch.p1.burnout_count;
-          statTotals.p1.cornerTime = newestMatch.p1.cornerSeconds;
-          statTotals.p1.punishes = newestMatch.p1.punish_tracker;
-          statTotals.p1.throws = newestMatch.p1.throws;
-          statTotals.p1.dIHits = newestMatch.p1.dIHit;
-          statTotals.p1.counterDIs = newestMatch.p1.dICounterDI;
-          statTotals.p1.perfectParries = newestMatch.p1.perfectParry;
-
-          statTotals.p2.burnouts = newestMatch.p2.burnout_count;
-          statTotals.p2.cornerTime = newestMatch.p2.cornerSeconds;
-          statTotals.p2.punishes = newestMatch.p2.punish_tracker;
-          statTotals.p2.throws = newestMatch.p2.throws;
-          statTotals.p2.dIHits = newestMatch.p2.dIHit;
-          statTotals.p2.counterDIs = newestMatch.p2.dICounterDI;
-          statTotals.p2.perfectParries = newestMatch.p2.perfectParry;
-
-          const p1InfoHtml = `
-            <div>Game ${data.length} Stats</div>
-            <div><img class="char-img" src="${getCharImg(newestMatch.p1.character)}"></div>
-            <div>${data[0].p1.playerName}</div>
-            <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
-            <ul>
-              <li><span>Burnouts:</span> <span class="${statTotals.p1.burnouts > statTotals.p2.burnouts ? "red" : ""}">${statTotals.p1.burnouts}</span></li>
-              <li><span>Punish Counters:</span> <span class="${statTotals.p1.punishes > statTotals.p2.punishes ? "gold" : ""}">${statTotals.p1.punishes}</span></li>
-              <li><span>Perfect Parries:</span> <span class="${statTotals.p1.perfectParries > statTotals.p2.perfectParries ? "gold" : ""}">${statTotals.p1.perfectParries}</span></li>
-              <li><span>Throws:</span> <span class="${statTotals.p1.throws > statTotals.p2.throws ? "gold" : ""}">${statTotals.p1.throws}</span></li>
-              <li><span>Uncontested DIs:</span> <span class="${statTotals.p1.dIHits > statTotals.p2.dIHits ? "gold" : ""}">${statTotals.p1.dIHits}</span></li>
-              <li><span>DI Counters:</span> <span class="${statTotals.p1.counterDIs > statTotals.p2.counterDIs ? "gold" : ""}">${statTotals.p1.counterDIs}</span></li>
-              <li><span>Time Cornered:</span> <span class="${statTotals.p1.cornerTime > statTotals.p2.cornerTime ? "red" : ""}">${statTotals.p1.cornerTime}s</span></li>
-            </ul>
-          `;
-
-          const p2InfoHtml = `
-            <div>Game ${data.length} Stats</div>
-            <div><img class="char-img" src="${getCharImg(newestMatch.p2.character)}"></div>
-            <div>${data[0].p2.playerName}</div>
-            <div class="winner">${newestMatch.p2.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
-            <ul>
-              <li><span>Burnouts:</span> <span class="${statTotals.p2.burnouts > statTotals.p1.burnouts ? "red" : ""}">${statTotals.p2.burnouts}</span></li>
-              <li><span>Punish Counters:</span> <span class="${statTotals.p2.punishes > statTotals.p1.punishes ? "gold" : ""}">${statTotals.p2.punishes}</span></li>
-              <li><span>Perfect Parries:</span> <span class="${statTotals.p2.perfectParries > statTotals.p1.perfectParries ? "gold" : ""}">${statTotals.p2.perfectParries}</span></li>
-              <li><span>Throws:</span> <span class="${statTotals.p2.throws > statTotals.p1.throws ? "gold" : ""}">${statTotals.p2.throws}</span></li>
-              <li><span>Uncontested DIs:</span> <span class="${statTotals.p2.dIHits > statTotals.p1.dIHits ? "gold" : ""}">${statTotals.p2.dIHits}</span></li>
-              <li><span>DI Counters:</span> <span class="${statTotals.p2.counterDIs > statTotals.p1.counterDIs ? "gold" : ""}">${statTotals.p2.counterDIs}</span></li>
-              <li><span>Time Cornered:</span> <span class="${statTotals.p2.cornerTime > statTotals.p1.cornerTime ? "red" : ""}">${statTotals.p2.cornerTime}s</span></li>
-            </ul>
-          `;
-
-          if (newestMatch.sideSwap) {
-            p1Info.innerHTML = p2InfoHtml;
-            p2Info.innerHTML = p1InfoHtml;
-          } else {
-            p1Info.innerHTML = p1InfoHtml;
-            p2Info.innerHTML = p2InfoHtml;
-          }
       });
     });
 
