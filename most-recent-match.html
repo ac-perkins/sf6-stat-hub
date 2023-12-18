@@ -229,7 +229,6 @@
           <div>Game ${data.length} Stats</div>
           <div><img class="char-img" src="${getCharImg(newestMatch.p1.character)}"></div>
           <div>${data[0].p1.playerName}</div>
-          <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
           <ul>
             <li><span>Burnouts:</span> <span class="${newestMatch.p1.burnout_count > newestMatch.p2.burnout_count ? "red" : ""}">${newestMatch.p1.burnout_count}</span></li>
             <li><span>Punish Counters:</span> <span class="${newestMatch.p1.punish_tracker > newestMatch.p2.punish_tracker ? "gold" : ""}">${newestMatch.p1.punish_tracker}</span></li>
@@ -245,7 +244,6 @@
           <div>Game ${data.length} Stats</div>
           <div><img class="char-img" src="${getCharImg(newestMatch.p2.character)}"></div>
           <div>${data[0].p2.playerName}</div>
-          <div class="winner">${newestMatch.p2.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
           <ul>
             <li><span>Burnouts:</span> <span class="${newestMatch.p2.burnout_count > newestMatch.p1.burnout_count ? "red" : ""}">${newestMatch.p2.burnout_count}</span></li>
             <li><span>Punish Counters:</span> <span class="${newestMatch.p2.punish_tracker > newestMatch.p1.punish_tracker ? "gold" : ""}">${newestMatch.p2.punish_tracker}</span></li>
