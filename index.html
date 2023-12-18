@@ -268,7 +268,7 @@
           statTotals.p1.counterDIs += match.p1.dICounterDI;
           statTotals.p1.perfectParries += match.p1.perfectParry;
           if (match.p1.isWinner) {
-            statTotals.p1.wins++
+            statTotals.p1.wins = statTotals.p1.wins + 1;             
           }
 
           statTotals.p2.burnouts += match.p2.burnout_count;
@@ -279,7 +279,7 @@
           statTotals.p2.counterDIs += match.p2.dICounterDI;
           statTotals.p2.perfectParries += match.p2.perfectParry;
           if (match.p2.isWinner) {
-            statTotals.p2.wins++
+            statTotals.p2.wins = statTotals.p2.wins + 1;
           }
         })
 
