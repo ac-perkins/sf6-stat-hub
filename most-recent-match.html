@@ -73,6 +73,21 @@
         font-size: 40px;
       }
 
+      .round-results {
+        margin: 20px 0 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      .round-results img {
+        width: 80px;
+        /* transform: scaleX(-1); */
+      }
+
+      #round-results-p1 {
+        flex-direction: row-reverse;
+      }
+
       .gold {
         color: gold;
       }
@@ -224,12 +239,15 @@
         console.log(doc.data().setData);
         let data = doc.data().setData
         let newestMatch = data[data.length -1];
+        let roundResults = newestMatch.roundResults;
+
+        // <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
 
         const p1InfoHtml = `
-          <div>Game ${data.length} Stats</div>
+          <div>Last Game's Stats</div>
           <div><img class="char-img" src="${getCharImg(newestMatch.p1.character)}"></div>
           <div>${data[0].p1.playerName}</div>
-          <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
+          <div id="round-results-p1" class="round-results"></div>
           <ul>
             <li><span>Burnouts:</span> <span class="${newestMatch.p1.burnout_count > newestMatch.p2.burnout_count ? "red" : ""}">${newestMatch.p1.burnout_count}</span></li>
             <li><span>Punish Counters:</span> <span class="${newestMatch.p1.punish_tracker > newestMatch.p2.punish_tracker ? "gold" : ""}">${newestMatch.p1.punish_tracker}</span></li>
@@ -242,10 +260,10 @@
         `;
 
         const p2InfoHtml = `
-          <div>Game ${data.length} Stats</div>
+          <div>Last Game's Stats</div>
           <div><img class="char-img" src="${getCharImg(newestMatch.p2.character)}"></div>
           <div>${data[0].p2.playerName}</div>
-          <div class="winner">${newestMatch.p2.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
+          <div id="round-results-p2" class="round-results"></div>
           <ul>
             <li><span>Burnouts:</span> <span class="${newestMatch.p2.burnout_count > newestMatch.p1.burnout_count ? "red" : ""}">${newestMatch.p2.burnout_count}</span></li>
             <li><span>Punish Counters:</span> <span class="${newestMatch.p2.punish_tracker > newestMatch.p1.punish_tracker ? "gold" : ""}">${newestMatch.p2.punish_tracker}</span></li>
@@ -263,6 +281,60 @@
         } else {
           p1Info.innerHTML = p1InfoHtml;
           p2Info.innerHTML = p2InfoHtml;
+        }
+
+        const p1RoundResults = document.getElementById('round-results-p1');
+        const p2RoundResults = document.getElementById('round-results-p2');
+        let p1RoundWinCount = 0;
+        let p2RoundWinCount = 0;
+        roundResults.forEach((round) => {
+          let winType = ""
+
+          // Double KO or Draw
+          if (round.winPlayer === 2) {
+            let p1drawImg = new Image();
+            p1drawImg.src = `img/icon_draw_l.png`;
+            let p2drawImg = new Image();
+            p2drawImg.src = `img/icon_draw_r.png`;
+            p1RoundResults.append(p1drawImg);
+            p2RoundResults.append(p2drawImg);
+          } else {
+            if (round.isPerfect === true) {
+              winType = "perfect"
+            } else if (round.winState === "time") {
+              winType = "time"
+            } else {
+              winType = round.winType;
+            }
+              let roundImg = new Image();
+              // Player 1
+              if (round.winPlayer === 0) {
+                p1RoundWinCount++;
+                roundImg.src = `img/icon_${winType}_l.png`;
+                p1RoundResults.append(roundImg);
+              // Player 2
+              } else {
+                p2RoundWinCount++;
+                roundImg.src = `img/icon_${winType}_r.png`;
+                p2RoundResults.append(roundImg);
+              }
+          }
+        });
+
+        if (newestMatch.p1.isWinner) {
+          let p2RoundPlaceholder = new Image();
+          p2RoundPlaceholder.src = "img/icon_placeholder_r.png";
+          p2RoundResults.append(p2RoundPlaceholder);
+          if (p2RoundWinCount === 0) {
+            p2RoundResults.append(p2RoundPlaceholder.cloneNode());
+          }
+        } else {
+          let p1RoundPlaceholder = new Image();
+          p1RoundPlaceholder.src = "img/icon_placeholder_l.png";
+          p1RoundResults.append(p1RoundPlaceholder);
+          if (p1RoundWinCount === 0) {
+            p1RoundResults.append(p1RoundPlaceholder.cloneNode());
+          }
         }
       });
     });
