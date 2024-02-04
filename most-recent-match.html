@@ -311,12 +311,20 @@
               if (round.winPlayer === 0) {
                 p1RoundWinCount++;
                 roundImg.src = `img/icon_${winType}_l.png`;
-                p1RoundResults.append(roundImg);
+                if (newestMatch.sideSwap) {
+                  p2RoundResults.append(roundImg);
+                } else {
+                  p1RoundResults.append(roundImg);
+                }
               // Player 2
               } else {
                 p2RoundWinCount++;
                 roundImg.src = `img/icon_${winType}_r.png`;
-                p2RoundResults.append(roundImg);
+                if (newestMatch.sideSwap) {
+                  p1RoundResults.append(roundImg);
+                } else {
+                  p2RoundResults.append(roundImg);
+                }
               }
           }
         });
@@ -325,6 +333,9 @@
           let p2RoundPlaceholder = new Image();
           p2RoundPlaceholder.src = "img/icon_placeholder_r.png";
           p2RoundResults.append(p2RoundPlaceholder);
+          if (newestMatch.sideSwap) {
+            p2RoundWinCount = p1RoundWinCount;
+          }
           if (p2RoundWinCount === 0) {
             p2RoundResults.append(p2RoundPlaceholder.cloneNode());
           }
@@ -332,6 +343,9 @@
           let p1RoundPlaceholder = new Image();
           p1RoundPlaceholder.src = "img/icon_placeholder_l.png";
           p1RoundResults.append(p1RoundPlaceholder);
+          if (newestMatch.sideSwap) {
+            p1RoundWinCount = p2RoundWinCount;
+          }
           if (p1RoundWinCount === 0) {
             p1RoundResults.append(p1RoundPlaceholder.cloneNode());
           }
