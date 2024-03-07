@@ -18,6 +18,8 @@
 
       body {
         background-color: transparent;
+        background-image: url(img/fightrise-stats-underlay.png);
+        background-size: cover;
         color: #fff;
         display: flex;
         font-family: 'Lato', sans-serif;
@@ -29,7 +31,7 @@
         font-size: 26px;
         list-style: none;
         margin-top: 40px;
-        padding-left: 0;
+        padding: 0 10px;
       }
 
       li {
@@ -84,7 +86,22 @@
         /* transform: scaleX(-1); */
       }
 
+      .screen-space {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
       #round-results-p1 {
+        flex-direction: row-reverse;
+      }
+
+      #round-results-p1.swapped {
+        flex-direction: row;
+      }
+
+      #round-results-p2.swapped {
         flex-direction: row-reverse;
       }
 
@@ -107,9 +124,9 @@
 
       #p1-info,
       #p2-info {
-        background-color: #000;
-        background-image: url(https://fightrise.com/storage/utf3/assets/team-fight-scoreboard-ice-bg.png);
-        background-size: cover;
+        /* background-color: #000; */
+        /* background-image: url(https://fightrise.com/storage/utf3/assets/team-fight-scoreboard-ice-bg.png); */
+        /* background-size: cover; */
         padding: 20px;
         width: 340px;
       }
@@ -126,7 +143,8 @@
 <body>
   <div id="stats-wrapper">
     <div id="p1-info"></div>
-    <div class="screen-space"></div>
+    <div class="screen-space">
+    </div>
     <div id="p2-info"></div>
   </div>
 
@@ -216,6 +234,9 @@
         case 'Guile':
           src = 'img/guile.png';
           break
+        case 'Ed':
+          src = 'img/ed.png';
+          break
         case 'E. Honda':
           src = 'img/ehonda.png';
           break
@@ -240,48 +261,52 @@
         let data = doc.data().setData
         let newestMatch = data[data.length -1];
         let roundResults = newestMatch.roundResults;
+        let p1, p2;
+
+        if (newestMatch.sideSwap) {
+          p2 = newestMatch.p1;
+          p1 = newestMatch.p2;
+        } else {
+          p1 = newestMatch.p1;
+          p2 = newestMatch.p2;
+        }
 
         // <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
 
         const p1InfoHtml = `
           <div>Last Game's Stats</div>
-          <div><img class="char-img" src="${getCharImg(newestMatch.p1.character)}"></div>
-          <div>${data[0].p1.playerName}</div>
+          <div><img class="char-img" src="${getCharImg(p1.character)}"></div>
+          <div>${p1.playerName}</div>
           <div id="round-results-p1" class="round-results"></div>
           <ul>
-            <li><span>Burnouts:</span> <span class="${newestMatch.p1.burnout_count > newestMatch.p2.burnout_count ? "red" : ""}">${newestMatch.p1.burnout_count}</span></li>
-            <li><span>Punish Counters:</span> <span class="${newestMatch.p1.punish_tracker > newestMatch.p2.punish_tracker ? "gold" : ""}">${newestMatch.p1.punish_tracker}</span></li>
-            <li><span>Perfect Parries:</span> <span class="${newestMatch.p1.perfectParry > newestMatch.p2.perfectParry ? "gold" : ""}">${newestMatch.p1.perfectParry}</span></li>
-            <li><span>Throws:</span> <span class="${newestMatch.p1.throws > newestMatch.p2.throws ? "gold" : ""}">${newestMatch.p1.throws}</span></li>
-            <li><span>Uncontested DIs:</span> <span class="${newestMatch.p1.dIHit > newestMatch.p2.dIHit ? "gold" : ""}">${newestMatch.p1.dIHit}</span></li>
-            <li><span>DI Counters:</span> <span class="${newestMatch.p1.dICounterDI > newestMatch.p2.dICounterDI ? "gold" : ""}">${newestMatch.p1.dICounterDI}</span></li>
-            <li><span>Time Cornered:</span> <span class="${newestMatch.p1.cornerSeconds > newestMatch.p2.cornerSeconds ? "red" : ""}">${newestMatch.p1.cornerSeconds}s</span></li>
+            <li><span>Burnouts:</span> <span class="${p1.burnout_count > p2.burnout_count ? "red" : ""}">${p1.burnout_count}</span></li>
+            <li><span>Punish Counters:</span> <span class="${p1.punish_tracker > p2.punish_tracker ? "gold" : ""}">${p1.punish_tracker}</span></li>
+            <li><span>Perfect Parries:</span> <span class="${p1.perfectParry > p2.perfectParry ? "gold" : ""}">${p1.perfectParry}</span></li>
+            <li><span>Throws:</span> <span class="${p1.throws > p2.throws ? "gold" : ""}">${p1.throws}</span></li>
+            <li><span>Uncontested DIs:</span> <span class="${p1.dIHit > p2.dIHit ? "gold" : ""}">${p1.dIHit}</span></li>
+            <li><span>DI Counters:</span> <span class="${p1.dICounterDI > p2.dICounterDI ? "gold" : ""}">${p1.dICounterDI}</span></li>
+            <li><span>Time Cornered:</span> <span class="${p1.cornerSeconds > p2.cornerSeconds ? "red" : ""}">${p1.cornerSeconds}s</span></li>
           </ul>
         `;
 
         const p2InfoHtml = `
           <div>Last Game's Stats</div>
-          <div><img class="char-img" src="${getCharImg(newestMatch.p2.character)}"></div>
-          <div>${data[0].p2.playerName}</div>
+          <div><img class="char-img" src="${getCharImg(p2.character)}"></div>
+          <div>${p2.playerName}</div>
           <div id="round-results-p2" class="round-results"></div>
           <ul>
-            <li><span>Burnouts:</span> <span class="${newestMatch.p2.burnout_count > newestMatch.p1.burnout_count ? "red" : ""}">${newestMatch.p2.burnout_count}</span></li>
-            <li><span>Punish Counters:</span> <span class="${newestMatch.p2.punish_tracker > newestMatch.p1.punish_tracker ? "gold" : ""}">${newestMatch.p2.punish_tracker}</span></li>
-            <li><span>Perfect Parries:</span> <span class="${newestMatch.p2.perfectParry > newestMatch.p1.perfectParry ? "gold" : ""}">${newestMatch.p2.perfectParry}</span></li>
-            <li><span>Throws:</span> <span class="${newestMatch.p2.throws > newestMatch.p1.throws ? "gold" : ""}">${newestMatch.p2.throws}</span></li>
-            <li><span>Uncontested DIs:</span> <span class="${newestMatch.p2.dIHit > newestMatch.p1.dIHit ? "gold" : ""}">${newestMatch.p2.dIHit}</span></li>
-            <li><span>DI Counters:</span> <span class="${newestMatch.p2.dICounterDI > newestMatch.p1.dICounterDI ? "gold" : ""}">${newestMatch.p2.dICounterDI}</span></li>
-            <li><span>Time Cornered:</span> <span class="${newestMatch.p2.cornerSeconds > newestMatch.p1.cornerSeconds ? "red" : ""}">${newestMatch.p2.cornerSeconds}s</span></li>
+            <li><span>Burnouts:</span> <span class="${p2.burnout_count > p1.burnout_count ? "red" : ""}">${p2.burnout_count}</span></li>
+            <li><span>Punish Counters:</span> <span class="${p2.punish_tracker > p1.punish_tracker ? "gold" : ""}">${p2.punish_tracker}</span></li>
+            <li><span>Perfect Parries:</span> <span class="${p2.perfectParry > p1.perfectParry ? "gold" : ""}">${p2.perfectParry}</span></li>
+            <li><span>Throws:</span> <span class="${p2.throws > p1.throws ? "gold" : ""}">${p2.throws}</span></li>
+            <li><span>Uncontested DIs:</span> <span class="${p2.dIHit > p1.dIHit ? "gold" : ""}">${p2.dIHit}</span></li>
+            <li><span>DI Counters:</span> <span class="${p2.dICounterDI > p1.dICounterDI ? "gold" : ""}">${p2.dICounterDI}</span></li>
+            <li><span>Time Cornered:</span> <span class="${p2.cornerSeconds > p1.cornerSeconds ? "red" : ""}">${p2.cornerSeconds}s</span></li>
           </ul>
         `;
 
-        if (newestMatch.sideSwap) {
-          p1Info.innerHTML = p2InfoHtml;
-          p2Info.innerHTML = p1InfoHtml;
-        } else {
           p1Info.innerHTML = p1InfoHtml;
           p2Info.innerHTML = p2InfoHtml;
-        }
 
         const p1RoundResults = document.getElementById('round-results-p1');
         const p2RoundResults = document.getElementById('round-results-p2');
@@ -311,43 +336,29 @@
               if (round.winPlayer === 0) {
                 p1RoundWinCount++;
                 roundImg.src = `img/icon_${winType}_l.png`;
-                if (newestMatch.sideSwap) {
-                  p2RoundResults.append(roundImg);
-                } else {
                   p1RoundResults.append(roundImg);
-                }
-              // Player 2
               } else {
                 p2RoundWinCount++;
                 roundImg.src = `img/icon_${winType}_r.png`;
-                if (newestMatch.sideSwap) {
-                  p1RoundResults.append(roundImg);
-                } else {
                   p2RoundResults.append(roundImg);
-                }
               }
           }
         });
 
-        if (newestMatch.p1.isWinner) {
-          let p2RoundPlaceholder = new Image();
-          p2RoundPlaceholder.src = "img/icon_placeholder_r.png";
-          p2RoundResults.append(p2RoundPlaceholder);
-          if (newestMatch.sideSwap) {
-            p2RoundWinCount = p1RoundWinCount;
-          }
+        let p2RoundPlaceholder = new Image();
+        p2RoundPlaceholder.src = "img/icon_placeholder_r.png";
+        let p1RoundPlaceholder = new Image();
+        p1RoundPlaceholder.src = "img/icon_placeholder_l.png";
+
+        if (p1.isWinner) {
+            p2RoundResults.append(p2RoundPlaceholder);
           if (p2RoundWinCount === 0) {
-            p2RoundResults.append(p2RoundPlaceholder.cloneNode());
+              p2RoundResults.append(p2RoundPlaceholder.cloneNode());
           }
-        } else {
-          let p1RoundPlaceholder = new Image();
-          p1RoundPlaceholder.src = "img/icon_placeholder_l.png";
-          p1RoundResults.append(p1RoundPlaceholder);
-          if (newestMatch.sideSwap) {
-            p1RoundWinCount = p2RoundWinCount;
-          }
+        } else {      
+            p1RoundResults.append(p1RoundPlaceholder);
           if (p1RoundWinCount === 0) {
-            p1RoundResults.append(p1RoundPlaceholder.cloneNode());
+              p1RoundResults.append(p1RoundPlaceholder.cloneNode());
           }
         }
       });
