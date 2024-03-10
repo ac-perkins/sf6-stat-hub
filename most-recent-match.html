@@ -335,12 +335,22 @@
               // Player 1
               if (round.winPlayer === 0) {
                 p1RoundWinCount++;
-                roundImg.src = `img/icon_${winType}_l.png`;
+                if (newestMatch.sideSwap) {
+                  roundImg.src = `img/icon_${winType}_r.png`;
+                  p2RoundResults.append(roundImg);
+                } else {
+                  roundImg.src = `img/icon_${winType}_l.png`;
                   p1RoundResults.append(roundImg);
+                }
               } else {
                 p2RoundWinCount++;
-                roundImg.src = `img/icon_${winType}_r.png`;
+                if (newestMatch.sideSwap) {
+                  roundImg.src = `img/icon_${winType}_l.png`;
+                  p1RoundResults.append(roundImg);
+                } else {
+                  roundImg.src = `img/icon_${winType}_r.png`;
                   p2RoundResults.append(roundImg);
+                }
               }
           }
         });
@@ -351,14 +361,25 @@
         p1RoundPlaceholder.src = "img/icon_placeholder_l.png";
 
         if (p1.isWinner) {
+            console.log('p1 winner');
+            console.log(p2RoundWinCount);
             p2RoundResults.append(p2RoundPlaceholder);
           if (p2RoundWinCount === 0) {
-              p2RoundResults.append(p2RoundPlaceholder.cloneNode());
+            console.log('p2RoundWinCount === 0');
+            p2RoundResults.append(p2RoundPlaceholder.cloneNode());
           }
-        } else {      
+          if (newestMatch.sideSwap && p1RoundWinCount === 0) {
+            p2RoundResults.append(p2RoundPlaceholder.cloneNode());
+          }
+        } else {    
+            console.log('p2 winner');  
             p1RoundResults.append(p1RoundPlaceholder);
           if (p1RoundWinCount === 0) {
+            console.log('p1RoundWinCount === 0');
               p1RoundResults.append(p1RoundPlaceholder.cloneNode());
+          }
+          if (newestMatch.sideSwap && p2RoundWinCount === 0) {
+            p1RoundResults.append(p1RoundPlaceholder.cloneNode());
           }
         }
       });
