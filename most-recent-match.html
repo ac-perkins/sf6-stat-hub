@@ -335,22 +335,12 @@
               // Player 1
               if (round.winPlayer === 0) {
                 p1RoundWinCount++;
-                if (newestMatch.sideSwap) {
-                  roundImg.src = `img/icon_${winType}_r.png`;
-                  p2RoundResults.append(roundImg);
-                } else {
                   roundImg.src = `img/icon_${winType}_l.png`;
                   p1RoundResults.append(roundImg);
-                }
               } else {
                 p2RoundWinCount++;
-                if (newestMatch.sideSwap) {
-                  roundImg.src = `img/icon_${winType}_l.png`;
-                  p1RoundResults.append(roundImg);
-                } else {
                   roundImg.src = `img/icon_${winType}_r.png`;
                   p2RoundResults.append(roundImg);
-                }
               }
           }
         });
@@ -368,18 +358,12 @@
             console.log('p2RoundWinCount === 0');
             p2RoundResults.append(p2RoundPlaceholder.cloneNode());
           }
-          if (newestMatch.sideSwap && p1RoundWinCount === 0) {
-            p2RoundResults.append(p2RoundPlaceholder.cloneNode());
-          }
         } else {    
             console.log('p2 winner');  
             p1RoundResults.append(p1RoundPlaceholder);
           if (p1RoundWinCount === 0) {
             console.log('p1RoundWinCount === 0');
               p1RoundResults.append(p1RoundPlaceholder.cloneNode());
-          }
-          if (newestMatch.sideSwap && p2RoundWinCount === 0) {
-            p1RoundResults.append(p1RoundPlaceholder.cloneNode());
           }
         }
       });
