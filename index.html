@@ -114,7 +114,7 @@
         font-size: 38px;
         font-weight: 600;
         grid-template-columns: repeat(3, 320px);
-        grid-template-rows: 90px 180px repeat(auto-fit, 90px);
+        grid-template-rows: 90px 180px repeat(auto-fit, 82px);
         justify-content: center;
         padding-right: 350px;
         padding-top: 60px;
@@ -234,6 +234,9 @@
         case 'M. Bison':
           src = 'img/mbison.png';
           break
+        case 'Terry':
+          src = 'img/terry.png';
+          break
         default:
           src = '';
           break;
@@ -261,6 +264,8 @@
             dIHits: 0,
             counterDIs: 0,
             perfectParries: 0,
+            splatted: 0,
+            stunned: 0,
             wins: 0
 
           },
@@ -272,6 +277,8 @@
             dIHits: 0,
             counterDIs: 0,
             perfectParries: 0,
+            splatted: 0,
+            stunned: 0,
             wins: 0
           }
         }
@@ -284,6 +291,9 @@
           statTotals.p1.dIHits += match.p1.dIHit;
           statTotals.p1.counterDIs += match.p1.dICounterDI;
           statTotals.p1.perfectParries += match.p1.perfectParry;
+          statTotals.p1.splatted += match.p1.splat_count;
+          statTotals.p1.stunned += match.p1.stunned;
+          statTotals.p1.perfectParries += match.p1.perfectParry;
           if (match.p1.isWinner) {
             statTotals.p1.wins++
           }
@@ -295,6 +305,8 @@
           statTotals.p2.dIHits += match.p2.dIHit;
           statTotals.p2.counterDIs += match.p2.dICounterDI;
           statTotals.p2.perfectParries += match.p2.perfectParry;
+          statTotals.p2.splatted += match.p2.splat_count;
+          statTotals.p2.stunned += match.p2.stunned;
           if (match.p2.isWinner) {
             statTotals.p2.wins++
           }
@@ -342,6 +354,17 @@
             <div>Uncontested DIs</div>
             <div class="${statTotals.p2.dIHits > statTotals.p1.dIHits ? "gold" : ""}">${statTotals.p2.dIHits}</div>
             
+            <div>
+              <span class="${statTotals.p1.splatted > statTotals.p2.splatted ? "red" : ""}">${statTotals.p1.splatted}</span>
+              /
+              <span class="${statTotals.p1.stunned > statTotals.p2.stunned ? "red" : ""}">${statTotals.p1.stunned}</span>
+            </div>
+            <div>Splatted / Stunned</div>
+            <div>
+              <span class="${statTotals.p2.splatted > statTotals.p1.splatted ? "red" : ""}">${statTotals.p2.splatted}</span>
+              /
+              <span class="${statTotals.p2.stunned > statTotals.p1.stunned ? "red" : ""}">${statTotals.p2.stunned}</span>
+            </div>            
             <div class="${statTotals.p1.counterDIs > statTotals.p2.counterDIs ? "gold" : ""}">${statTotals.p1.counterDIs}</div>
             <div>DI Counters</div>
             <div class="${statTotals.p2.counterDIs > statTotals.p1.counterDIs ? "gold" : ""}">${statTotals.p2.counterDIs}</div>
