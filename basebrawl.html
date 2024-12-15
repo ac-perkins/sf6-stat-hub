@@ -37,7 +37,7 @@
       li {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 28px;
+        margin-bottom: 38px;
       }
 
       .set-names-wrapper {
@@ -126,6 +126,7 @@
       }
 
       .basebrawl-results p {
+        align-items: center;
         display: flex;
         justify-content: flex-start;
         margin-top: 14px;
@@ -160,6 +161,14 @@
 
       #p2-info .char-img {
         transform: scaleX(-1);
+      }
+
+      .die-icon {
+        font-size: 40px;
+        font-weight: normal;
+        position: absolute;
+        margin-left: 10px;
+        margin-top: -9px;
       }
     </style>
 </head>
@@ -316,7 +325,6 @@
           <div id="round-results-p1" class="round-results"></div>
           <div class="basebrawl-results">
             <p><span><img src="img/baseball-bat.png"></span> <span id="p1-batting"></span></p>  
-            <p><span><img src="img/baseball-glove.png"></span> <span id="p1-fielding"></span></p>  
           </div>
           <ul>
             <li><span>Burnouts:</span> <span class="${p1.burnout_count > p2.burnout_count ? "red" : ""}">${p1.burnout_count}</span></li>
@@ -336,7 +344,6 @@
             <div>${p2.playerName}</div>
             <div id="round-results-p2" class="round-results"></div>
             <div class="basebrawl-results">
-              <p><span><img src="img/baseball-bat.png"></span> <span id="p2-batting"></span></p>  
               <p><span><img src="img/baseball-glove.png"></span> <span id="p2-fielding"></span></p>  
             </div>
             <ul>
@@ -422,45 +429,45 @@
 
           } else if (roundResults[2] && roundResults[2].winType === "ca") {
             basebrawlResults.batting = "Home Run";
-            basebrawlResults.fielding = "Double Play ⚀";
+            basebrawlResults.fielding = "Double Play <span class='die-icon'>⚂</span>";
 
           } else if (roundResults[2] &&
                      wr[0].isPerfect === true &&
                      wr[1].isPerfect === true) {
             basebrawlResults.batting = "Triple";
-            basebrawlResults.fielding = "Double Play ⚀";
+            basebrawlResults.fielding = "Double Play <span class='die-icon'>⚂</span>";
 
           } else if (wr[0].winType === "chip" || 
                      wr[1].winType === "chip") {
-            basebrawlResults.batting = "Double + Steal";
-            basebrawlResults.fielding = "Double Play ⚀";
+            basebrawlResults.batting = "Double <span class='die-icon'>⚂</span>";
+            basebrawlResults.fielding = "Double Play <span class='die-icon'>⚂</span>";
          
           } else if (wr[0].winType === "ca" ||
                      wr[1].winType === "ca") {
-            basebrawlResults.batting = "Double + Steal";
+            basebrawlResults.batting = "Double <span class='die-icon'>⚂</span>";
             basebrawlResults.fielding = "Double Play";
 
           } else if (wr[0].isPerfect === true ||
                      wr[1].isPerfect === true) {
                       console.log("in one round perfect");
-            basebrawlResults.batting = "Double + Steal";
-            basebrawlResults.fielding = "Strike Out ⚀";
+            basebrawlResults.batting = "Double <span class='die-icon'>⚂</span>";
+            basebrawlResults.fielding = "Strike Out <span class='die-icon'>⚂</span>";
                 
           } else if ((roundResults[2] && roundResults[2].winType === "sa") ||
                      wr[0].winType === "od" ||
                      wr[1].winType === "od") {
                       console.log("sa/od outcome");
             basebrawlResults.batting = "Double";
-            basebrawlResults.fielding = "Strike Out ⚀";
+            basebrawlResults.fielding = "Strike Out <span class='die-icon'>⚂</span>";
 
           } else if (wr[0].winState === "time" ||
                      wr[1].winState === "time") { 
-            basebrawlResults.batting = "Single + Steal";
-            basebrawlResults.fielding = "Strike Out ⚀";
+            basebrawlResults.batting = "Single <span class='die-icon'>⚂</span>";
+            basebrawlResults.fielding = "Strike Out <span class='die-icon'>⚂</span>";
 
           } else if (wr[0].winType === "sa" ||
                      wr[1].winType === "sa") { 
-            basebrawlResults.batting = "Single + Steal";
+            basebrawlResults.batting = "Single <span class='die-icon'>⚂</span>";
             basebrawlResults.fielding = "Strike Out";
 
           } else {
@@ -476,19 +483,14 @@
 
         if (p1.isWinner) {
           getBasebrawlResults(p1Rounds, p2Rounds)
-          // console.log(basebrawlResults);
-          p1Batting.append(basebrawlResults.batting);
-          p1Fielding.append(basebrawlResults.fielding);
-          p2Batting.append(basebrawlResults.battingLoser);
-          p2Fielding.append("—");
+          console.log(basebrawlResults);
+          p1Batting.innerHTML = basebrawlResults.batting;
+          p2Fielding.innerHTML = "—";
         } else {
           getBasebrawlResults(p2Rounds, p1Rounds)
-          // console.log(basebrawlResults);
-          p2Batting.append(basebrawlResults.batting);
-          p2Fielding.append(basebrawlResults.fielding);
-          p1Batting.append(basebrawlResults.battingLoser);
-          p1Fielding.append("—");
-
+          console.log(basebrawlResults);
+          p2Fielding.innerHTML = basebrawlResults.fielding;
+          p1Batting.innerHTML = basebrawlResults.battingLoser;
         }
 
         
