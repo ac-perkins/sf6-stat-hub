@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SF6 Basebrawl</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
+      html {
+        height: 100%;
+        box-sizing: border-box;
+      }
+
+      *, *:before, *:after {
+        box-sizing: inherit;
+      }
+
+      body {
+        background-color: transparent;
+        background-size: cover;
+        color: #fff;
+        display: flex;
+        font-family: 'Lato', sans-serif;
+        height: 100%;
+        margin: 0;
+        text-shadow: 1px 2px 1px #000;
+      }
+
+      ul {
+        font-size: 26px;
+        list-style: none;
+        margin-top: 20px;
+        padding: 0 10px;
+      }
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 28px;
+      }
+
+      .set-names-wrapper {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        padding-left: 40px;
+        padding-top: 40px;
+      }
+
+      .logo-wrapper {
+        background-color: #222;
+        padding: 10px;
+      }
+
+      .active-li::after {
+        content:'>';
+        font-size: 40px;
+        position: absolute;
+        top: -12px;
+        /* font-weight: 600; */
+        margin-left: 20px;
+      }
+
+      .char-img {
+        border: 2px solid white;
+        background-color: rgba(0, 0, 0, 0.7);
+        margin: 40px 0 0;
+        max-width: 300px;
+        min-width: 200px;
+      }
+
+      .winner {
+        height: 40px;
+        margin: 20px 0;
+        font-size: 40px;
+      }
+
+      .round-results {
+        margin: 20px 0 30px;
+        display: flex;
+        justify-content: center;
+      }
+
+      .round-results img {
+        width: 80px;
+        /* transform: scaleX(-1); */
+      }
+
+      .screen-space {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      #round-results-p1 {
+        flex-direction: row-reverse;
+      }
+
+      #round-results-p1.swapped {
+        flex-direction: row;
+      }
+
+      #round-results-p2.swapped {
+        flex-direction: row-reverse;
+      }
+
+      .gold {
+        color: gold;
+      }
+
+      .red {
+        color: red;
+      }
+
+      .player-info-wrapper {
+        background-image: url(img/dark-green-grass-pattern.png);
+        background-size: 50%;
+      }
+
+      .basebrawl-results {
+        padding: 10px 0;
+        border-top: 4px solid #fff;
+        border-bottom: 4px solid #fff;
+      }
+
+      .basebrawl-results p {
+        align-items: center;
+        display: flex;
+        justify-content: flex-start;
+        margin-top: 14px;
+        margin-bottom: 14px;
+        padding: 0 10px;
+      }
+
+      .basebrawl-results img {
+        width: 50px;
+        margin-right: 22px;
+      }
+
+      #stats-wrapper {
+        display: flex;
+        flex: 1;
+        font-size: 32px;
+        font-weight: 600;
+        justify-content: space-between;
+        text-align: center;
+      }
+
+      #p1-info,
+      #p2-info {
+        background-color: rgba(0, 0, 0, 0.5);
+        background-size: 50%;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        padding: 20px;
+        width: 340px;
+      }
+
+      #p2-info .char-img {
+        transform: scaleX(-1);
+      }
+    </style>
+</head>
+<body>
+  <div id="stats-wrapper">
+    <div class="player-info-wrapper">
+      <div id="p1-info"></div>
+    </div>
+    <div class="screen-space">
+    </div>
+    <div class="player-info-wrapper">
+      <div id="p2-info"></div>
+    </div>
+  </div>
+
+
+    <!-- Insert this script at the bottom of the HTML, but before you use any Firebase services -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
+
+    // Add Firebase products that you want to use
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+    import { getFirestore, collection, getDocs, onSnapshot, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+    apiKey: "AIzaSyD1QtHGv0JCfwypJW_X2sKT87-wZweWnd8",
+    authDomain: "sf6-stat-tracker.firebaseapp.com",
+    projectId: "sf6-stat-tracker",
+    storageBucket: "sf6-stat-tracker.appspot.com",
+    messagingSenderId: "692566161474",
+    appId: "1:692566161474:web:bd4ef32c22239af0a095db",
+    measurementId: "G-T2RYDLZ6HD"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    // console.log(db);
+
+    let setUl = document.getElementById('set-names')
+
+    // Get character image
+    const getCharImg = (character) => {
+      let src = '';
+      switch (character) {
+        case 'Ryu':
+          src = 'img/chibi-ryu.png';
+          break;
+        case 'Luke':
+          src = 'img/chibi-luke.png';
+          break
+        case 'Kimberly':
+          src = 'img/chibi-kimberly.png';
+          break
+        case 'Chun-Li':
+          src = 'img/chibi-chunli.png';
+          break
+        case 'Manon':
+          src = 'img/chibi-manon.png';
+          break
+        case 'Zangief':
+          src = 'img/chibi-zangief.png';
+          break
+        case 'JP':
+          src = 'img/chibi-jp.png';
+          break
+        case 'Dhalsim':
+          src = 'img/chibi-dhalsim.png';
+          break
+        case 'Cammy':
+          src = 'img/chibi-cammy.png';
+          break
+        case 'Ken':
+          src = 'img/chibi-ken.png';
+          break
+        case 'Dee Jay':
+          src = 'img/chibi-deejay.png';
+          break
+        case 'Lily':
+          src = 'img/chibi-lily.png';
+          break
+        case 'Aki':
+          src = 'img/chibi-aki.png';
+          break
+        case 'Rashid':
+          src = 'img/chibi-rashid.png';
+          break
+        case 'Blanka':
+          src = 'img/chibi-blanka.png';
+          break
+        case 'Juri':
+          src = 'img/chibi-juri.png';
+          break
+        case 'Marisa':
+          src = 'img/chibi-marisa.png';
+          break
+        case 'Guile':
+          src = 'img/chibi-guile.png';
+          break
+        case 'Ed':
+          src = 'img/chibi-ed.png';
+          break
+        case 'E. Honda':
+          src = 'img/chibi-ehonda.png';
+          break
+        case 'Jamie':
+          src = 'img/chibi-jamie.png';
+          break
+        case 'Akuma':
+          src = 'img/chibi-akuma.png';
+          break
+        case 'M. Bison':
+          src = 'img/chibi-mbison.png';
+          break
+        case 'Terry':
+          src = 'img/chibi-terry.png';
+          break
+        default:
+          src = '';
+          break;
+      }
+      return src;
+    }
+
+    // Get match data
+    const q = query(collection(db, "sets"), orderBy("timestamp", "desc"), limit(1));
+    const querySnapshot = onSnapshot(q, (querySnapshot) => {
+      let statsWrapper = document.getElementById('stats-wrapper');
+      const p1Info = document.getElementById("p1-info");
+      const p2Info = document.getElementById("p2-info");
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data().setData);
+        let data = doc.data().setData
+        let newestMatch = data[data.length -1];
+        let roundResults = newestMatch.roundResults;
+        let p1, p2;
+
+        if (newestMatch.sideSwap) {
+          p2 = newestMatch.p1;
+          p1 = newestMatch.p2;
+        } else {
+          p1 = newestMatch.p1;
+          p2 = newestMatch.p2;
+        }
+
+        // <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
+
+        const p1InfoHtml = `
+          <div>Last Game's Stats</div>
+          <div><img class="char-img" src="${getCharImg(p1.character)}"></div>
+          <div>${p1.playerName}</div>
+          <div id="round-results-p1" class="round-results"></div>
+          <div class="basebrawl-results">
+            <p><span><img src="img/baseball-bat.png"></span> <span id="p1-batting"></span></p>  
+            <p><span><img src="img/baseball-glove.png"></span> <span id="p1-fielding"></span></p>
+          </div>
+          <ul>
+            <li><span>Burnouts:</span> <span class="${p1.burnout_count > p2.burnout_count ? "red" : ""}">${p1.burnout_count}</span></li>
+            <li><span>Punish Counters:</span> <span class="${p1.punish_tracker > p2.punish_tracker ? "gold" : ""}">${p1.punish_tracker}</span></li>
+            <li><span>Perfect Parries:</span> <span class="${p1.perfectParry > p2.perfectParry ? "gold" : ""}">${p1.perfectParry}</span></li>
+            <li><span>Throws:</span> <span class="${p1.throws > p2.throws ? "gold" : ""}">${p1.throws}</span></li>
+            <li><span>Uncontested DIs:</span> <span class="${p1.dIHit > p2.dIHit ? "gold" : ""}">${p1.dIHit}</span></li>
+            <li><span>DI Counters:</span> <span class="${p1.dICounterDI > p2.dICounterDI ? "gold" : ""}">${p1.dICounterDI}</span></li>
+            <li><span>Time Cornered:</span> <span class="${p1.cornerSeconds > p2.cornerSeconds ? "red" : ""}">${p1.cornerSeconds}s</span></li>
+          </ul>
+        `;
+
+        const p2InfoHtml = `
+          <div>
+            <div>Last Game's Stats</div>
+            <div><img class="char-img" src="${getCharImg(p2.character)}"></div>
+            <div>${p2.playerName}</div>
+            <div id="round-results-p2" class="round-results"></div>
+            <div class="basebrawl-results">
+              <p><span><img src="img/baseball-bat.png"></span> <span id="p2-batting"></span></p>
+              <p><span><img src="img/baseball-glove.png"></span> <span id="p2-fielding"></span></p>
+            </div>
+            <ul>
+              <li><span>Burnouts:</span> <span class="${p2.burnout_count > p1.burnout_count ? "red" : ""}">${p2.burnout_count}</span></li>
+              <li><span>Punish Counters:</span> <span class="${p2.punish_tracker > p1.punish_tracker ? "gold" : ""}">${p2.punish_tracker}</span></li>
+              <li><span>Perfect Parries:</span> <span class="${p2.perfectParry > p1.perfectParry ? "gold" : ""}">${p2.perfectParry}</span></li>
+              <li><span>Throws:</span> <span class="${p2.throws > p1.throws ? "gold" : ""}">${p2.throws}</span></li>
+              <li><span>Uncontested DIs:</span> <span class="${p2.dIHit > p1.dIHit ? "gold" : ""}">${p2.dIHit}</span></li>
+              <li><span>DI Counters:</span> <span class="${p2.dICounterDI > p1.dICounterDI ? "gold" : ""}">${p2.dICounterDI}</span></li>
+              <li><span>Time Cornered:</span> <span class="${p2.cornerSeconds > p1.cornerSeconds ? "red" : ""}">${p2.cornerSeconds}s</span></li>
+            </ul>
+          </div>
+        `;
+
+          p1Info.innerHTML = p1InfoHtml;
+          p2Info.innerHTML = p2InfoHtml;
+
+        const p1RoundResults = document.getElementById('round-results-p1');
+        const p2RoundResults = document.getElementById('round-results-p2');
+        const p1Batting = document.getElementById('p1-batting');
+        const p1Fielding = document.getElementById('p1-fielding');
+        const p2Batting = document.getElementById('p2-batting');
+        const p2Fielding = document.getElementById('p2-fielding');
+        let p1RoundWinCount = 0;
+        let p2RoundWinCount = 0;
+        let p1Rounds = [];
+        let p2Rounds = [];
+        let basebrawlResults = {
+          batting: "",
+          fielding: "",
+          battingLoser: "—"
+        }
+        roundResults.forEach((round) => {
+          // console.log(round);
+          let winType = ""
+
+          // Double KO or Draw
+          if (round.winPlayer === 2) {
+            let p1drawImg = new Image();
+            p1drawImg.src = `img/icon_draw_l.png`;
+            let p2drawImg = new Image();
+            p2drawImg.src = `img/icon_draw_r.png`;
+            p1RoundResults.append(p1drawImg);
+            p2RoundResults.append(p2drawImg);
+          } else {
+            if (round.isPerfect === true) {
+              winType = "perfect"
+            } else if (round.winState === "time") {
+              winType = "time"
+            } else {
+              winType = round.winType;
+            }
+              let roundImg = new Image();
+              // Player 1
+              if (round.winPlayer === 0) {
+                p1RoundWinCount++;
+                  roundImg.src = `img/icon_${winType}_l.png`;
+                  p1RoundResults.append(roundImg);
+                  p1Rounds.push({winType: round.winType, winState: round.winState, roundNumber: round.roundNumber, isPerfect: round.isPerfect});
+              } else {
+                p2RoundWinCount++;
+                  roundImg.src = `img/icon_${winType}_r.png`;
+                  p2RoundResults.append(roundImg);
+                  p2Rounds.push({winType: round.winType, winState: round.winState, roundNumber: round.roundNumber, isPerfect: round.isPerfect});
+              }
+          }
+        });
+
+        // console.log('p1Rounds:', p1Rounds);
+        // console.log('p2Rounds:', p2Rounds);
+        // console.log('roundResults:', roundResults[2].winType);
+
+        const getBasebrawlResults = (winnerResults, loserResults) => {
+          const wr = winnerResults;
+          const lr = loserResults;
+          // console.log("wr:", wr);
+          // console.log("lr:", lr);
+
+          if ((wr[0].isPerfect === true && wr[0].roundNumber === 1) || 
+              (wr[1].isPerfect === true && wr[1].roundNumber === 2)) {
+                basebrawlResults.batting = "Home Run";
+                basebrawlResults.fielding = "Triple Play";
+
+          } else if (roundResults[2] && roundResults[2].winType === "ca") {
+            basebrawlResults.batting = "Home Run";
+            basebrawlResults.fielding = "Double Play ⚀";
+
+          } else if (roundResults[2] &&
+                     wr[0].isPerfect === true &&
+                     wr[1].isPerfect === true) {
+            basebrawlResults.batting = "Triple";
+            basebrawlResults.fielding = "Double Play ⚀";
+
+          } else if (wr[0].winType === "chip" || 
+                     wr[1].winType === "chip") {
+            basebrawlResults.batting = "Double + Steal";
+            basebrawlResults.fielding = "Double Play ⚀";
+         
+          } else if (wr[0].winType === "ca" ||
+                     wr[1].winType === "ca") {
+            basebrawlResults.batting = "Double + Steal";
+            basebrawlResults.fielding = "Double Play";
+
+          } else if (wr[0].isPerfect === true ||
+                     wr[1].isPerfect === true) {
+                      console.log("in one round perfect");
+            basebrawlResults.batting = "Double + Steal";
+            basebrawlResults.fielding = "Strike Out ⚀";
+                
+          } else if ((roundResults[2] && roundResults[2].winType === "sa") ||
+                     wr[0].winType === "od" ||
+                     wr[1].winType === "od") {
+                      console.log("sa/od outcome");
+            basebrawlResults.batting = "Double";
+            basebrawlResults.fielding = "Strike Out ⚀";
+
+          } else if (wr[0].winState === "time" ||
+                     wr[1].winState === "time") { 
+            basebrawlResults.batting = "Single + Steal";
+            basebrawlResults.fielding = "Strike Out ⚀";
+
+          } else if (wr[0].winType === "sa" ||
+                     wr[1].winType === "sa") { 
+            basebrawlResults.batting = "Single + Steal";
+            basebrawlResults.fielding = "Strike Out";
+
+          } else {
+              basebrawlResults.batting = "Single";
+              basebrawlResults.fielding = "Strike Out";
+          }
+
+          if ((lr[0] && lr[0].winType === "ca") || (lr[0] && lr[0].winType ==="chip")) {
+            basebrawlResults.battingLoser = "Steal Chance"
+          }
+          
+        };
+
+        if (p1.isWinner) {
+          getBasebrawlResults(p1Rounds, p2Rounds)
+          // console.log(basebrawlResults);
+          p1Batting.append(basebrawlResults.batting);
+          p1Fielding.append(basebrawlResults.fielding);
+          p2Batting.append(basebrawlResults.battingLoser);
+          p2Fielding.append("—");
+        } else {
+          getBasebrawlResults(p2Rounds, p1Rounds)
+          // console.log(basebrawlResults);
+          p2Batting.append(basebrawlResults.batting);
+          p2Fielding.append(basebrawlResults.fielding);
+          p1Batting.append(basebrawlResults.battingLoser);
+          p1Fielding.append("—");
+
+        }
+
+        
+
+        let p2RoundPlaceholder = new Image();
+        p2RoundPlaceholder.src = "img/icon_placeholder_r.png";
+        let p1RoundPlaceholder = new Image();
+        p1RoundPlaceholder.src = "img/icon_placeholder_l.png";
+
+        if (p1.isWinner) {
+            console.log('p1 winner');
+            console.log(p2RoundWinCount);
+            p2RoundResults.append(p2RoundPlaceholder);
+          if (p2RoundWinCount === 0) {
+            console.log('p2RoundWinCount === 0');
+            p2RoundResults.append(p2RoundPlaceholder.cloneNode());
+          }
+        } else {    
+            console.log('p2 winner');  
+            p1RoundResults.append(p1RoundPlaceholder);
+          if (p1RoundWinCount === 0) {
+            console.log('p1RoundWinCount === 0');
+              p1RoundResults.append(p1RoundPlaceholder.cloneNode());
+          }
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
