@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SF6 Stat Hub Recent Match</title>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap');
+
+      html {
+        height: 100%;
+        box-sizing: border-box;
+      }
+
+      *, *:before, *:after {
+        box-sizing: inherit;
+      }
+
+      body {
+        background-color: transparent;
+        background-image: url(img/fightrise-bg.png);
+        background-size: cover;
+        color: #fff;
+        display: flex;
+        font-family: 'Lato', sans-serif;
+        height: 100%;
+        margin: 0;
+      }
+
+      ul {
+        font-size: 37px;
+        list-style: none;
+        margin-top: 40px;
+        padding: 0 10px;
+      }
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 46px;
+      }
+
+      .set-names-wrapper {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        padding-left: 40px;
+        padding-top: 40px;
+      }
+
+      .logo-wrapper {
+        background-color: #222;
+        padding: 10px;
+      }
+
+      .active-li::after {
+        content:'>';
+        font-size: 40px;
+        position: absolute;
+        top: -12px;
+        /* font-weight: 600; */
+        margin-left: 20px;
+      }
+
+      .char-img {
+        border: 2px solid white;
+        background-color: black;
+        margin: 40px 0 0;
+        max-width: 300px;
+      }
+
+      .winner {
+        height: 40px;
+        margin: 20px 0;
+        font-size: 40px;
+      }
+
+      .round-results {
+        margin: 20px 0 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      .round-results img {
+        width: 80px;
+        /* transform: scaleX(-1); */
+      }
+
+      .screen-space {
+        flex-direction: column;
+        justify-content: space-between;
+        width: 340px;
+      }
+
+      #round-results-p1 {
+        flex-direction: row-reverse;
+      }
+
+      #round-results-p1.swapped {
+        flex-direction: row;
+      }
+
+      #round-results-p2.swapped {
+        flex-direction: row-reverse;
+      }
+
+      .gold {
+        color: gold;
+      }
+
+      .red {
+        color: red;
+      }
+
+      #stats-wrapper {
+        display: flex;
+        flex: 1;
+        font-size: 32px;
+        font-weight: 600;
+        justify-content: center;
+        text-align: center;
+      }
+
+      #p1-info,
+      #p2-info {
+        /* background-color: #000; */
+        /* background-image: url(https://fightrise.com/storage/utf3/assets/team-fight-scoreboard-ice-bg.png); */
+        /* background-size: cover; */
+        padding: 20px;
+        width: 440px;
+      }
+
+      #p2-info {
+        background-position: right;
+      }
+
+      #p2-info .char-img {
+        transform: scaleX(-1);
+      }
+    </style>
+</head>
+<body>
+  <div id="stats-wrapper">
+    <div id="p1-info"></div>
+    <div class="screen-space">
+    </div>
+    <div id="p2-info"></div>
+  </div>
+
+
+    <!-- Insert this script at the bottom of the HTML, but before you use any Firebase services -->
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js'
+
+    // Add Firebase products that you want to use
+    import { getAuth } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+    import { getFirestore, collection, getDocs, onSnapshot, query, orderBy, limit } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js'
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+    apiKey: "AIzaSyD1QtHGv0JCfwypJW_X2sKT87-wZweWnd8",
+    authDomain: "sf6-stat-tracker.firebaseapp.com",
+    projectId: "sf6-stat-tracker",
+    storageBucket: "sf6-stat-tracker.appspot.com",
+    messagingSenderId: "692566161474",
+    appId: "1:692566161474:web:bd4ef32c22239af0a095db",
+    measurementId: "G-T2RYDLZ6HD"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    // console.log(db);
+
+    let setUl = document.getElementById('set-names')
+
+    // Get character image
+    const getCharImg = (character) => {
+      let src = '';
+      switch (character) {
+        case 'Ryu':
+          src = 'img/ryu.png';
+          break;
+        case 'Luke':
+          src = 'img/luke.png';
+          break
+        case 'Kimberly':
+          src = 'img/kimberly.png';
+          break
+        case 'Chun-Li':
+          src = 'img/chunli.png';
+          break
+        case 'Manon':
+          src = 'img/manon.png';
+          break
+        case 'Zangief':
+          src = 'img/zangief.png';
+          break
+        case 'JP':
+          src = 'img/jp.png';
+          break
+        case 'Dhalsim':
+          src = 'img/dhalsim.png';
+          break
+        case 'Cammy':
+          src = 'img/cammy.png';
+          break
+        case 'Ken':
+          src = 'img/ken.png';
+          break
+        case 'Dee Jay':
+          src = 'img/deejay.png';
+          break
+        case 'Lily':
+          src = 'img/lily.png';
+          break
+        case 'Aki':
+          src = 'img/aki.png';
+          break
+        case 'Rashid':
+          src = 'img/rashid.png';
+          break
+        case 'Blanka':
+          src = 'img/blanka.png';
+          break
+        case 'Juri':
+          src = 'img/juri.png';
+          break
+        case 'Marisa':
+          src = 'img/marisa.png';
+          break
+        case 'Guile':
+          src = 'img/guile.png';
+          break
+        case 'Ed':
+          src = 'img/ed.png';
+          break
+        case 'E. Honda':
+          src = 'img/ehonda.png';
+          break
+        case 'Jamie':
+          src = 'img/jamie.png';
+          break
+        case 'Akuma':
+          src = 'img/akuma.png';
+          break
+        case 'M. Bison':
+          src = 'img/mbison.png';
+          break
+        case 'Terry':
+          src = 'img/terry.png';
+          break
+        case 'Mai':
+          src = 'img/mai.png';
+          break
+        default:
+          src = '';
+          break;
+      }
+      return src;
+    }
+
+    // Get match data
+    const q = query(collection(db, "sets"), orderBy("timestamp", "desc"), limit(1));
+    const querySnapshot = onSnapshot(q, (querySnapshot) => {
+      let statsWrapper = document.getElementById('stats-wrapper');
+      const p1Info = document.getElementById("p1-info");
+      const p2Info = document.getElementById("p2-info");
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data().setData);
+        let data = doc.data().setData
+        let newestMatch = data[data.length -1];
+        let roundResults = newestMatch.roundResults;
+        let p1, p2;
+
+        if (newestMatch.sideSwap) {
+          p2 = newestMatch.p1;
+          p1 = newestMatch.p2;
+        } else {
+          p1 = newestMatch.p1;
+          p2 = newestMatch.p2;
+        }
+
+        // <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
+
+        const p1InfoHtml = `
+          <div>Last Game's Stats</div>
+          <div><img class="char-img" src="${getCharImg(p1.character)}"></div>
+          <div>${p1.playerName}</div>
+          <div id="round-results-p1" class="round-results"></div>
+          <ul>
+            <li><span>Burnouts:</span> <span class="${p1.burnout_count > p2.burnout_count ? "red" : ""}">${p1.burnout_count}</span></li>
+            <li><span>Punish Counters:</span> <span class="${p1.punish_tracker > p2.punish_tracker ? "gold" : ""}">${p1.punish_tracker}</span></li>
+            <li><span>Perfect Parries:</span> <span class="${p1.perfectParry > p2.perfectParry ? "gold" : ""}">${p1.perfectParry}</span></li>
+            <li><span>Throws:</span> <span class="${p1.throws > p2.throws ? "gold" : ""}">${p1.throws}</span></li>
+            <li><span>Uncontested DIs:</span> <span class="${p1.dIHit > p2.dIHit ? "gold" : ""}">${p1.dIHit}</span></li>
+            <li><span>DI Counters:</span> <span class="${p1.dICounterDI > p2.dICounterDI ? "gold" : ""}">${p1.dICounterDI}</span></li>
+            <li><span>Time Cornered:</span> <span class="${p1.cornerSeconds > p2.cornerSeconds ? "red" : ""}">${p1.cornerSeconds}s</span></li>
+          </ul>
+        `;
+
+        const p2InfoHtml = `
+          <div>Last Game's Stats</div>
+          <div><img class="char-img" src="${getCharImg(p2.character)}"></div>
+          <div>${p2.playerName}</div>
+          <div id="round-results-p2" class="round-results"></div>
+          <ul>
+            <li><span>Burnouts:</span> <span class="${p2.burnout_count > p1.burnout_count ? "red" : ""}">${p2.burnout_count}</span></li>
+            <li><span>Punish Counters:</span> <span class="${p2.punish_tracker > p1.punish_tracker ? "gold" : ""}">${p2.punish_tracker}</span></li>
+            <li><span>Perfect Parries:</span> <span class="${p2.perfectParry > p1.perfectParry ? "gold" : ""}">${p2.perfectParry}</span></li>
+            <li><span>Throws:</span> <span class="${p2.throws > p1.throws ? "gold" : ""}">${p2.throws}</span></li>
+            <li><span>Uncontested DIs:</span> <span class="${p2.dIHit > p1.dIHit ? "gold" : ""}">${p2.dIHit}</span></li>
+            <li><span>DI Counters:</span> <span class="${p2.dICounterDI > p1.dICounterDI ? "gold" : ""}">${p2.dICounterDI}</span></li>
+            <li><span>Time Cornered:</span> <span class="${p2.cornerSeconds > p1.cornerSeconds ? "red" : ""}">${p2.cornerSeconds}s</span></li>
+          </ul>
+        `;
+
+          p1Info.innerHTML = p1InfoHtml;
+          p2Info.innerHTML = p2InfoHtml;
+
+        const p1RoundResults = document.getElementById('round-results-p1');
+        const p2RoundResults = document.getElementById('round-results-p2');
+        let p1RoundWinCount = 0;
+        let p2RoundWinCount = 0;
+        roundResults.forEach((round) => {
+          let winType = ""
+
+          // Double KO or Draw
+          if (round.winPlayer === 2) {
+            let p1drawImg = new Image();
+            p1drawImg.src = `img/icon_draw_l.png`;
+            let p2drawImg = new Image();
+            p2drawImg.src = `img/icon_draw_r.png`;
+            p1RoundResults.append(p1drawImg);
+            p2RoundResults.append(p2drawImg);
+          } else {
+            if (round.isPerfect === true) {
+              winType = "perfect"
+            } else if (round.winState === "time") {
+              winType = "time"
+            } else {
+              winType = round.winType;
+            }
+              let roundImg = new Image();
+              // Player 1
+              if (round.winPlayer === 0) {
+                p1RoundWinCount++;
+                  roundImg.src = `img/icon_${winType}_l.png`;
+                  p1RoundResults.append(roundImg);
+              } else {
+                p2RoundWinCount++;
+                  roundImg.src = `img/icon_${winType}_r.png`;
+                  p2RoundResults.append(roundImg);
+              }
+          }
+        });
+
+        let p2RoundPlaceholder = new Image();
+        p2RoundPlaceholder.src = "img/icon_placeholder_r.png";
+        let p1RoundPlaceholder = new Image();
+        p1RoundPlaceholder.src = "img/icon_placeholder_l.png";
+
+        if (p1.isWinner) {
+            console.log('p1 winner');
+            console.log(p2RoundWinCount);
+            p2RoundResults.append(p2RoundPlaceholder);
+          if (p2RoundWinCount === 0) {
+            console.log('p2RoundWinCount === 0');
+            p2RoundResults.append(p2RoundPlaceholder.cloneNode());
+          }
+        } else {    
+            console.log('p2 winner');  
+            p1RoundResults.append(p1RoundPlaceholder);
+          if (p1RoundWinCount === 0) {
+            console.log('p1RoundWinCount === 0');
+              p1RoundResults.append(p1RoundPlaceholder.cloneNode());
+          }
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
