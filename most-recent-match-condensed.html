@@ -87,9 +87,11 @@
       }
 
       .screen-space {
+        display: flex;
         flex-direction: column;
-        justify-content: space-between;
-        width: 400px;
+        font-size: 140px;
+        justify-content: center;
+        width: 500px;
       }
 
       #round-results-p1 {
@@ -126,7 +128,7 @@
         /* background-color: #000; */
         /* background-image: url(https://fightrise.com/storage/utf3/assets/team-fight-scoreboard-ice-bg.png); */
         /* background-size: cover; */
-        padding: 20px;
+        padding: 36px 20px 20px 20px;
         width: 440px;
       }
 
@@ -142,7 +144,7 @@
 <body>
   <div id="stats-wrapper">
     <div id="p1-info"></div>
-    <div class="screen-space">
+    <div id="screen-space" class="screen-space">
     </div>
     <div id="p2-info"></div>
   </div>
@@ -267,6 +269,7 @@
       let statsWrapper = document.getElementById('stats-wrapper');
       const p1Info = document.getElementById("p1-info");
       const p2Info = document.getElementById("p2-info");
+      const winsHtml = document.getElementById("screen-space");
       querySnapshot.forEach((doc) => {
         console.log(doc.data().setData);
         let data = doc.data().setData
@@ -281,6 +284,26 @@
           p1 = newestMatch.p1;
           p2 = newestMatch.p2;
         }
+
+        let statTotals = {
+          p1: {
+            wins: 0
+
+          },
+          p2: {
+            wins: 0
+          }
+        }
+
+        data.forEach((match) => {
+          if (match.p1.isWinner) {
+            statTotals.p1.wins++
+          }
+
+          if (match.p2.isWinner) {
+            statTotals.p2.wins++
+          }
+        })
 
         // <div class="winner">${newestMatch.p1.isWinner ? "<span class='gold'>WINNER</span>" : ""}</div>
 
@@ -316,8 +339,17 @@
           </ul>
         `;
 
-          p1Info.innerHTML = p1InfoHtml;
-          p2Info.innerHTML = p2InfoHtml;
+        const setCountHtml = `
+            <div class="score">
+              <span>${statTotals.p1.wins}</span>
+              <span class="score-divider">-</span>
+              <span>${statTotals.p2.wins}</span>
+            </div>
+        `;
+
+        p1Info.innerHTML = p1InfoHtml;
+        p2Info.innerHTML = p2InfoHtml;
+        winsHtml.innerHTML = setCountHtml;
 
         const p1RoundResults = document.getElementById('round-results-p1');
         const p2RoundResults = document.getElementById('round-results-p2');
